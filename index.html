@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="description"
-        content="Multi-Turn Code Generation Through Single Step Rewards">
+        content="Distilling Realizable Students from Unrealizable Teachers">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Multi-Turn Code Generation Through Single Step Rewards</title>
+  <title>Distilling Realizable Students from Unrealizable Teachers</title>
 
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RQW73WXYW9"></script>
@@ -45,34 +45,28 @@
     <div class="container is-max-desktop">
       <div class="columns is-centered">
         <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title">Multi-Turn Code Generation Through Single Step Rewards</h1>
+          <h1 class="title is-1 publication-title">Distilling Realizable Students from Unrealizable Teachers</h1>
 
           <div class="is-size-5 publication-authors">
             <span class="author-block">
-              <a href="https://arnavkj1995.github.io/">Arnav Kumar Jain<sup>1,2*</sup></a>,</span>
+              <a href="https://yujin1007.github.io/">Yujin Kim<sup>1*</sup></a>,</span>
             <span class="author-block">
-              <a href="https://gonzalogonzalezpumariega.com/">Gonzalo Gonzalez-Pumariega<sup>3*</sup></a>,</span>
+              <a href="nlc62@cornell.edu">Nathaniel Chin<sup>1*</sup></a>,</span>
             <span class="author-block">
-                <a href="https://www.linkedin.com/in/waynechen314/">Wayne Chen<sup>3</sup></a>,</span>
-            <span class="author-block">
-                <a href="https://rush-nlp.com/">Alexander M Rush<sup>3</sup></a>,</span>
-                <span class="author-block">
-                  <a href="https://wenting-zhao.github.io/">Wenting Zhao<sup>3\( \dagger \)</sup></a>,</span>
+              <a href="av432@cornell.edu">Arnav Vasudev<sup>1</sup></a>,</span>
             <span class="author-block">
                 <a href="https://www.sanjibanchoudhury.com/">Sanjiban Choudhury<sup>3\( \dagger \)</sup></a>            
           </div>
           <div class="is-size-4">
             <font size="4.5">
-            <sup>1</sup>Mila-Quebec AI Institute,  
-            <sup>2</sup>Université de Montréal, 
-            <sup>3</sup>Cornell University
+            <sup>1</sup>Cornell University,
             </font>
           </div>
 
           <br>
           <div class="is-size-4">
-          <img src="./static/images/mila-logo.png" width="15%" hspace="20" ></img>
-          <img src="./static/images/udem-logo.png" width="12%" hspace="20"></img>
+          <!-- <img src="./static/images/mila-logo.png" width="15%" hspace="20" ></img>
+          <img src="./static/images/udem-logo.png" width="12%" hspace="20"></img> -->
           <!-- <img src="./static/images/mcgill-logo.png" width="15%" hspace="20"></img> -->
           <img src="./static/images/cornell-university-logo.png" width="18%" hspace="20"></img>
           </div>
@@ -101,7 +95,7 @@
               </span>
               <!-- Code Link. -->
               <span class="link-block">
-                <a href="https://github.com/portal-cornell/muCode"
+                <a href="https://github.com/portal-cornell/CritiQ_ReTRy"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fab fa-github"></i>
@@ -121,7 +115,7 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column">
-        <h1 class="title is-3">\( \mu \texttt{Code} \) is a simple and scalable method for multi-turn code generation leveraging learned verifiers.</h1>
+        <h1 class="title is-3">\( \texttt{CritiQ} \) and \(\texttt{ReTRy}\) strategically mitigate information asymmetry in teacher-student policy distillation by selective querying and reset to recoverable trajectories. </h1>
         <br>
         <img src="./static/images/key_insight.gif" width="1500">
         </div>
@@ -131,14 +125,11 @@
       <div class="column is-four-fifths">
         <h2 class="title is-3">Abstract</h2>
           <p style="text-align: left;">
-            We address the problem of code generation from multi-turn execution feedback. 
-            Existing methods either generate code without feedback or use complex, hierarchical reinforcement learning to optimize multi-turn rewards.
-            We propose a simple yet scalable approach, \( \mu \texttt{Code} \), that solves multi-turn code generation using only single-step rewards.
-            Our key insight is that code generation is a one-step recoverable MDP, where the correct code can be recovered from any intermediate code state in a single turn.
-            \( \mu \texttt{Code} \) iteratively trains both a generator to provide  code solutions conditioned on multi-turn execution feedback and a verifier to score the newly generated code.
-            Experimental evaluations show that our approach achieves significant improvements over the state-of-the-art generator-verifier baselines. 
-            We provide analysis of the design choices of the reward models and policy, and show the efficacy of \( \mu \texttt{Code} \) at utilizing the execution feedback.
-          </p>
+            We study policy distillation under privileged information, where a student policy with only partial observations must learn from a teacher with full-state access. A key challenge is \emph{information asymmetry}: the student cannot directly access the teacher’s state space, leading to distributional shifts and policy degradation.
+            Existing approaches either modify the teacher to produce realizable but sub-optimal demonstrations or rely on the student to explore missing information independently, both of which are inefficient. Our key insight is that the student should strategically interact with the teacher \textemdash querying only when necessary and resetting from recovery states \textemdash to stay on a recoverable path within its own observation space.
+            We introduce two methods: (i) an imitation learning approach that adaptively determines \emph{when} the student should query the teacher for corrections, and (ii) a reinforcement learning approach that selects \emph{where} to initialize training for efficient exploration.
+            We validate our methods in both simulated and real-world robotic tasks, demonstrating significant improvements over standard teacher-student baselines in training efficiency and final performance.
+            </p>
       </div>
     </div>
     <br>
@@ -213,7 +204,7 @@
         <h3 class="title is-4" style="text-align: center;">BibTex</h3>
         <pre style="overflow-x:hidden; text-wrap:wrap; white-space: pre-wrap;"><code>
 @article{jain2025multi,
-    title={Multi-Turn Code Generation Through Single Step Rewards},
+    title={Distilling Realizable Students from Unrealizable Teachers},
     author={Arnav Kumar Jain and Gonzalo Gonzalez-Pumariega and Wayne Chen and Alexander M Rush and Wenting Zhao and Sanjiban Choudhury},
     journal={CoRR},
     volume={abs/2502.20380},
