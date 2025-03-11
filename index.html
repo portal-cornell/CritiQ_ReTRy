@@ -113,7 +113,7 @@
 
 <section class="section">
   <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
+    <!-- <div class="columns is-centered has-text-centered">
       <div class="column">
           <h1 class="title is-3">\( \texttt{CritiQ} \) and \(\texttt{ReTRy}\) strategically mitigate information asymmetry in teacher-student policy distillation by selective querying and resetting to recoverable trajectories.</h1>
           <br>
@@ -121,7 +121,18 @@
               <img src="./static/fig/information_assymetry.png" width="500">
               <img src="./static/fig/information_assymetry.gif" width="1000">
           </div>
-      </div>
+      </div> -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column">
+            
+            <div class="gif-container">
+                <img src="./static/fig/information_assymetry.gif" width="1500">
+            </div>
+            <br>
+            <h1 class="title is-3">\( \texttt{CritiQ} \) and \(\texttt{ReTRy}\) strategically mitigate information asymmetry in teacher-student policy distillation by selective querying and resetting to recoverable trajectories.</h1>
+            
+        </div>
+    </div>
   </div>
     <!-- Dataset -->
     <div class="columns is-centered has-text-centered">
@@ -141,9 +152,9 @@
       <div class="column">
         <h2 class="title is-3">\( \texttt{CritiQ} \) Overview</h2>
         <p style="text-align: left;">
-          \( \mu \texttt{Code} \) follows an <b>expert iteration</b> framework with a local search expert via a learned verifier. 
-          \( \mu \texttt{Code} \) iteratively trains two components - 1) a <i>learned verifier</i> to score responses 
-          and 2) a <i>generator</i> to produce code solutions by imitating the local search. 
+          \( \texttt{CritiQ} \) queries the teacher only at critical states
+          —states where the student is about to take an action with no recoverable supervision (e.g., choosing an incorrect box). 
+          This ensures that the student receives necessary correction data while avoiding excessive aliasing.
           </li>
       </p>
       <br>
@@ -155,10 +166,9 @@
       <div class="column">
         <h2 class="title is-3">\(\texttt{ReTRy}\) Overview</h2>
         <p style="text-align: left;">
-          At inference time, \( \mu \texttt{Code} \)  improves solutions over successive turns with <i>multi-turn Best-of-N (BoN)</i>.
-          The generator produces N candidate solutions which are ranked via the verifier (orange representing the chosen solution).
-          The retrieved solution is tested on public tests and the execution feedback is utilized to improve this solution.
-          Our learned verifier gives high scores to solutions with less errors (highlighted in yellow).
+          \(\texttt{ReTRy}\) iteratively refines the reset distribution.
+          Instead of resetting only to teacher-visited states, \(\texttt{ReTRy}\) rolls out the teacher from states visited by the student, 
+          augmenting the set of reset states.
           </li>
       </p>
       <br>
@@ -169,24 +179,49 @@
 
     <div class="columns is-centered has-text-centered">
       <div class="column">
-        <h2 class="title is-3">Results</h2>
+        <h2 class="title is-3">Experiments</h2>
         <p style="text-align: left;">
-          Our experiments demonstrate that all multi-turn methods perform better with the proposed multi-turn BoN approach. 
-          The Best-of-N (BoN) accuracy is computed with N=5 solutions where the combination of public tests and the learned verifier is used for selection.
-          Our proposed method \( \mu \texttt{Code} \) outperforms competing methods. 
+          We tested our algorithms in three policy distillation tasks under information asymmetry. 
           </li>
-      </p>
-      <br>
-        <img src="./static/images/Table1.png" width="600">
+        </p>
+        <br>
+        <img src="./static/fig/task_description.gif" width="1000">
         <br> <br>
+        <h3 class="title is-3">Finding 1: Selective querying and refining reset distribution enables task success.</h3>
         <p style="text-align: left;">
-          We conduct a component wise ablation study where we: <br>
-          1) <b>Compare public tests (PT) and learned verifier (LV) </b> for multi-turn BoN search at test-time (left) <br>
-          2) <b>Evaluate generators</b> at incorporating execution feedback where \( \mu Code \) consistently improvess performance (top right) <br>
-          3) <b>Assess scaling behaviors</b> at inference time with number of candidate generations (N) at each turn (bottom right)
-      </p>
-      <br>
-        <img src="./static/images/combined_figs.jpeg" width="1000">
+          Our experiments demonstrate that proposed methods performs better compare to baselines in all tasks. 
+          While both \(\texttt{CritiQ}\) and \(\texttt{ReTRy}\) showed \(100\%\) of task completion for most tasks, 
+          \(\texttt{CritiQ}\) suffer from compounding error in long-horizon task with high precision is required(drawer task) and \(\texttt{ReTRy}\) showed \(100\%\) of task completion in all tasks. 
+          </li>
+        </p>
+        <br>
+        <img src="./static/fig/overall_results_sim.png" width="1500">
+        <br><br>
+        <h3 class="title is-3">Finding 2: Every algorithms has unique patterns across all tasks.</h3>
+        <p style="text-align: left;">
+          
+          <b>\(\texttt{BC}\) </b> : Try out one of the demonstrations that teacher showed. Leading to success rate of \(\frac{1}{C}\), where \(C\) is the number of possible cases of hidden information. <br>
+          <b>\(\texttt{DAgger}\)</b>: Ended up oscillating due to augmenting conflicting teacher actions for the same state. <br>
+          <b>\(\texttt{CritiQ}\)</b>: Seach over multiple possible cases.
+          <b>\(\texttt{ReTRy}\)</b>: Seach over all possible cases.
+        </p>
+        <br>
+          <img src="./static/fig/alltasks.gif" width="1000">
+        <br> <br>
+        <h3 class="title is-3">Finding 3: Strategic interaction with teacher demonstration makes enables exploratory behavior. </h3>
+        <p style="text-align: left;">
+          For drawer finding task, data augmentation is done every \(k\) epoch for \(\texttt{CritiQ}\) and twice throughout the training time for \(\texttt{ReTRy}\). 
+          The dataset for \(\texttt{BC}\) is the same and \(\texttt{DAgger}\) aggregate data every step. The figure in the left is showing the exploratory search level
+          of each algorithms searched for over the training time. The result shows that  \(\texttt{CritiQ}\) reached medium seach level within 100 min of training, 
+          while \(\texttt{ReTRy}\) reached medium search level around 400 min and high seach level around 500 min. While \(\texttt{BC}\) converges to low level search 
+          behavior within 20 min \(\texttt{DAgger}\) search level reaches low and diverges to None, due to indiscreet data augmentation. 
+          This result shows that strategical interaction with teacher for data augmentation is important to obtain exploratory behaviors. 
+
+        </li>
+        </p>
+        <br>
+        <img src="./static/fig/exploration_real.png" width="1500">
+        <br><br>
       </div>
     </div> 
     
