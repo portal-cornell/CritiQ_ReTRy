@@ -139,9 +139,9 @@
       <div class="column is-four-fifths">
         <h2 class="title is-3">Abstract</h2>
           <p style="text-align: left;">
-            We study policy distillation under privileged information, where a student policy with only partial observations must learn from a teacher with full-state access. A key challenge is \emph{information asymmetry}: the student cannot directly access the teacher’s state space, leading to distributional shifts and policy degradation.
-            Existing approaches either modify the teacher to produce realizable but sub-optimal demonstrations or rely on the student to explore missing information independently, both of which are inefficient. Our key insight is that the student should strategically interact with the teacher \textemdash querying only when necessary and resetting from recovery states \textemdash to stay on a recoverable path within its own observation space.
-            We introduce two methods: (i) an imitation learning approach that adaptively determines \emph{when} the student should query the teacher for corrections, and (ii) a reinforcement learning approach that selects \emph{where} to initialize training for efficient exploration.
+            We study policy distillation under privileged information, where a student policy with only partial observations must learn from a teacher with full-state access. A key challenge is \(\emph{information asymmetry}\): the student cannot directly access the teacher’s state space, leading to distributional shifts and policy degradation.
+            Existing approaches either modify the teacher to produce realizable but sub-optimal demonstrations or rely on the student to explore missing information independently, both of which are inefficient. Our key insight is that the student should strategically interact with the teacher \textemdash querying only when necessary and resetting from recovery states \(\textemdash\) to stay on a recoverable path within its own observation space.
+            We introduce two methods: (i) an imitation learning approach that adaptively determines \(\emph{when}\) the student should query the teacher for corrections, and (ii) a reinforcement learning approach that selects \(\emph{where}\) to initialize training for efficient exploration.
             We validate our methods in both simulated and real-world robotic tasks, demonstrating significant improvements over standard teacher-student baselines in training efficiency and final performance.
             </p>
       </div>
@@ -187,35 +187,37 @@
         <br>
         <img src="./static/fig/task_description.gif" width="1000">
         <br> <br>
-        <h3 class="title is-3">Finding 1: Selective querying and refining reset distribution enables task success.</h3>
+        <h3 class="title is-3">Finding 1: Selective querying and refining reset distribution enable task success.</h3>
         <p style="text-align: left;">
-          Our experiments demonstrate that proposed methods performs better compare to baselines in all tasks. 
+          Our experiments demonstrate that the proposed methods perform better compared to baselines in all tasks.
           While both \(\texttt{CritiQ}\) and \(\texttt{ReTRy}\) showed \(100\%\) of task completion for most tasks, 
-          \(\texttt{CritiQ}\) suffer from compounding error in long-horizon task with high precision is required(drawer task) and \(\texttt{ReTRy}\) showed \(100\%\) of task completion in all tasks. 
+          \(\texttt{CritiQ}\) suffers from compounding error in long-horizon task with high precision is required (e.g., the drawer task), whereas
+          \(\texttt{ReTRy}\) showed \(100\%\) task completion in all tasks. 
           </li>
         </p>
         <br>
         <img src="./static/fig/overall_results_sim.png" width="1500">
         <br><br>
-        <h3 class="title is-3">Finding 2: Every algorithms has unique patterns across all tasks.</h3>
+        <h3 class="title is-3">Finding 2: Every algorithm has unique patterns across all tasks.</h3>
         <p style="text-align: left;">
           
-          <b>\(\texttt{BC}\) </b> : Try out one of the demonstrations that teacher showed. Leading to success rate of \(\frac{1}{C}\), where \(C\) is the number of possible cases of hidden information. <br>
-          <b>\(\texttt{DAgger}\)</b>: Ended up oscillating due to augmenting conflicting teacher actions for the same state. <br>
-          <b>\(\texttt{CritiQ}\)</b>: Seach over multiple possible cases.
-          <b>\(\texttt{ReTRy}\)</b>: Seach over all possible cases.
+          <b>\(\texttt{BC}\) </b> : Tries one of the demonstrations the teacher showed, leading to a success rate of \(\frac{1}{C}\), 
+          where \(C\) is the number of possible cases of hidden information. <br>
+          <b>\(\texttt{DAgger}\)</b>: Ends up oscillating due to augmenting conflicting teacher actions for the same state.  <br>
+          <b>\(\texttt{CritiQ}\)</b>: Seaches over multiple possible cases.
+          <b>\(\texttt{ReTRy}\)</b>: Seaches over all possible cases.
         </p>
         <br>
           <img src="./static/fig/alltasks.gif" width="1000">
         <br> <br>
-        <h3 class="title is-3">Finding 3: Strategic interaction with teacher demonstration makes enables exploratory behavior. </h3>
+        <h3 class="title is-3">Finding 3: Strategic interaction with teacher demonstration enables exploratory behavior. </h3>
         <p style="text-align: left;">
-          For drawer finding task, data augmentation is done every \(k\) epoch for \(\texttt{CritiQ}\) and twice throughout the training time for \(\texttt{ReTRy}\). 
-          The dataset for \(\texttt{BC}\) is the same and \(\texttt{DAgger}\) aggregate data every step. The figure in the left is showing the exploratory search level
-          of each algorithms searched for over the training time. The result shows that  \(\texttt{CritiQ}\) reached medium seach level within 100 min of training, 
-          while \(\texttt{ReTRy}\) reached medium search level around 400 min and high seach level around 500 min. While \(\texttt{BC}\) converges to low level search 
-          behavior within 20 min \(\texttt{DAgger}\) search level reaches low and diverges to None, due to indiscreet data augmentation. 
-          This result shows that strategical interaction with teacher for data augmentation is important to obtain exploratory behaviors. 
+          For the drawer-finding task, data augmentation is performed every \(k\) epoch for \(\texttt{CritiQ}\) and twice throughout the training time for \(\texttt{ReTRy}\). 
+          The dataset for \(\texttt{BC}\) remains the same, while \(\texttt{DAgger}\) aggregates data every step. The figure on the left shows the exploratory search level
+          of each algorithm over the training time. The results indicate that \(\texttt{CritiQ}\) reached a medium seach level within 100 minutes of training, 
+          whereas \(\texttt{ReTRy}\) reached a medium search level around 400 minutes and a high seach level around 500 minutes. 
+          While \(\texttt{BC}\) converges to a low-level search behavior within 20 minutes, \(\texttt{DAgger}\)'s search level initially reaches a low level but then diverges to None due to indiscreet data augmentation.
+          This result shows that strategical interaction with teacher for data augmentation is important in achieving exploratory behavior.
 
         </li>
         </p>
@@ -235,7 +237,7 @@
         <h2 class="title is-3">Paper</h2>
     <div class="paper-thumbnail">
         <a href="https://arxiv.org/pdf/2502.20380">
-            <img class="layered-paper-big" width="100%" src="./static/images/preview_muCode.png" alt="Paper thumbnail"/>
+            <img class="layered-paper-big" width="100%" src="./static/fig/preview_policydistillation.png" alt="Paper thumbnail"/>
         </a>
     </div>
     <div class="paper-info">
@@ -270,7 +272,7 @@
 
 </body>
 
-<style>
+<!-- <style>
   .gif-container {
       display: flex;
       justify-content: center;
@@ -280,5 +282,5 @@
       max-width: 100%;
       height: auto;
   }
-</style>
+</style> -->
 </html>
