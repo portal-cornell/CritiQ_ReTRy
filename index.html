@@ -92,7 +92,7 @@
                   </span>
                   <span>arXiv</span>
                 </a>
-              </span>
+              </span> 
               <!-- Code Link. -->
               <span class="link-block">
                 <a href="https://github.com/portal-cornell/CritiQ_ReTRy"
@@ -117,7 +117,7 @@
       <div class="column">
         <h1 class="title is-3">\( \texttt{CritiQ} \) and \(\texttt{ReTRy}\) strategically mitigate information asymmetry in teacher-student policy distillation by selective querying and resetting to recoverable trajectories. </h1>
         <br>
-        <!-- <img src="./static/images/key_insight.gif" width="1500"> -->
+        <!-- <img src="./static/fig/overview_critiQ.gif" width="1500"> -->
         </div>
     </div>
     <!-- Dataset -->
@@ -136,7 +136,7 @@
 
     <div class="columns is-centered has-text-centered">
       <div class="column">
-        <h2 class="title is-3">\( \mu \texttt{Code} \) Overview</h2>
+        <h2 class="title is-3">\( \texttt{CritiQ} \) Overview</h2>
         <p style="text-align: left;">
           \( \mu \texttt{Code} \) follows an <b>expert iteration</b> framework with a local search expert via a learned verifier. 
           \( \mu \texttt{Code} \) iteratively trains two components - 1) a <i>learned verifier</i> to score responses 
@@ -144,13 +144,13 @@
           </li>
       </p>
       <br>
-        <img src="./static/images/muCode_train.gif" width="1500">
+        <img src="./static/fig/overview_critiQ.gif" width="1500">
       </div>
     </div> 
 
     <div class="columns is-centered has-text-centered">
       <div class="column">
-        <h2 class="title is-3">Multi-turn Best-of-N Search at Test-time</h2>
+        <h2 class="title is-3">\(\texttt{ReTRy} Overview\)</h2>
         <p style="text-align: left;">
           At inference time, \( \mu \texttt{Code} \) improves solutions over successive turns with <i>multi-turn Best-of-N (BoN)</i>.
           The generator produces N candidate solutions which are ranked via the verifier (orange representing the chosen solution).
@@ -159,7 +159,7 @@
           </li>
       </p>
       <br>
-        <img src="./static/images/muCode_inference.gif" width="1500">
+        <img src="./static/fig/overview_ReTRy.gif" width="1500">
       
       </div>
     </div> 
