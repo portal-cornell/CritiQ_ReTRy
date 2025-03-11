@@ -115,11 +115,14 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column">
-        <h1 class="title is-3">\( \texttt{CritiQ} \) and \(\texttt{ReTRy}\) strategically mitigate information asymmetry in teacher-student policy distillation by selective querying and resetting to recoverable trajectories. </h1>
-        <br>
-        <!-- <img src="./static/fig/overview_critiQ.gif" width="1500"> -->
-        </div>
-    </div>
+          <h1 class="title is-3">\( \texttt{CritiQ} \) and \(\texttt{ReTRy}\) strategically mitigate information asymmetry in teacher-student policy distillation by selective querying and resetting to recoverable trajectories.</h1>
+          <br>
+          <div class="gif-container">
+              <img src="./static/fig/information_assymetry.png" width="500">
+              <img src="./static/fig/information_assymetry.png" width="1000">
+          </div>
+      </div>
+  </div>
     <!-- Dataset -->
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
@@ -150,9 +153,9 @@
 
     <div class="columns is-centered has-text-centered">
       <div class="column">
-        <h2 class="title is-3">\(\texttt{ReTRy} Overview\)</h2>
+        <h2 class="title is-3">\(\texttt{ReTRy}\) Overview</h2>
         <p style="text-align: left;">
-          At inference time, \( \mu \texttt{Code} \) improves solutions over successive turns with <i>multi-turn Best-of-N (BoN)</i>.
+          At inference time, \( \mu \texttt{Code} \)  improves solutions over successive turns with <i>multi-turn Best-of-N (BoN)</i>.
           The generator produces N candidate solutions which are ranked via the verifier (orange representing the chosen solution).
           The retrieved solution is tested on public tests and the execution feedback is utilized to improve this solution.
           Our learned verifier gives high scores to solutions with less errors (highlighted in yellow).
@@ -231,4 +234,16 @@
 </footer>
 
 </body>
+
+<style>
+  .gif-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px; /* Adjust spacing between GIFs */
+  }
+  .gif-container img {
+      max-width: 100%;
+      height: auto;
+  }
+</style>
 </html>
