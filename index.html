@@ -126,17 +126,19 @@
         <div class="column">
           <!-- <div class="column is-four-fifths"> -->
             
-            <div class="gif-container">
-                <!-- <img src="./static/fig/information_assymetry.gif" width="1500"> -->
-                <img src="./static/fig/information_assymetry.gif">
-            </div>
+            
             <br>
             <h1 class="title is-3">\( \texttt{CritiQ} \) and \(\texttt{ReTRy}\) strategically mitigate information asymmetry in teacher-student policy distillation by selective querying 
               and resetting to recoverable trajectories.</h1>
-            
+              <div class="gif-container">
+                <!-- <img src="./static/fig/information_assymetry.gif" width="1500"> -->
+                <img src="./static/fig/information_assymetry.gif">
+            </div>
         </div>
     </div>
   </div>
+  <br>
+  <br>
     <!-- Dataset -->
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
@@ -173,7 +175,7 @@
             This ensures that the student receives necessary correction data while avoiding excessive aliasing.</li> -->
       
       <br>
-        <img src="./static/fig/overview_critiQ.gif" width="1500">
+        <img src="./static/fig/overview_critiQ.gif" width="1000">
       <!-- </div> -->
       </div>
     </div> 
@@ -189,7 +191,7 @@
           </li>
       </p>
       <br>
-        <img src="./static/fig/overview_ReTRy.gif" width="1500">
+        <img src="./static/fig/overview_ReTRy.gif" width="1000">
       
       </div>
     </div> 
@@ -214,7 +216,7 @@
           </li>
         </p>
         <br>
-        <img src="./static/fig/overall_results_sim.png" width="1500">
+        <img src="./static/fig/overall_results_sim.png" width="800">
         <br><br>
         <h3 class="title is-3">Finding 2: Every algorithm has unique patterns across all tasks.</h3>
         <p style="text-align: left;">
@@ -222,7 +224,7 @@
           <b>\(\texttt{BC}\) </b> : Tries one of the demonstrations the teacher showed, leading to a success rate of \(\frac{1}{C}\), 
           where \(C\) is the number of possible cases of hidden information. <br>
           <b>\(\texttt{DAgger}\)</b>: Ends up oscillating due to augmenting conflicting teacher actions for the same state.  <br>
-          <b>\(\texttt{CritiQ}\)</b>: Seaches over multiple possible cases.
+          <b>\(\texttt{CritiQ}\)</b>: Seaches over multiple possible cases. <br>
           <b>\(\texttt{ReTRy}\)</b>: Seaches over all possible cases.
         </p>
         <br>
