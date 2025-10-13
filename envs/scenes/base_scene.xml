@@ -1,0 +1,116 @@
+<mujoco model="stretch scene">
+  <include file="stretch_3.xml"/>
+  <statistic center="0 0 .75" extent="1.2" meansize="0.05"/>
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <global azimuth="-120" elevation="-20" offwidth="720" offheight="1280"/>
+  </visual>
+
+  <asset>
+    <material name="mat_drawer" rgba="0.8 0.6 0.4 1" />
+    <texture name="slide_metal" type="cube" height="1" width="1" file="drawer/metal1.png"/>
+    <material name="slide_metal" texture="slide_metal" texrepeat="3 3" reflectance="0.7" shininess=".4" texuniform="false"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3"
+      markrgb="0.8 0.8 0.8" width="300" height="300"/>
+    <material name="floor" texture="groundplane"/>
+    <texture type="2d" name="wood" file="wood.png"/>
+    <material name="wood" texture="wood"/>
+    <material name="object" rgba=".2 .2 .2 1"/>
+    <texture type="skybox" builtin="gradient" rgb1="0.44 0.80 1.00" rgb2="1 1 1" width="512" height="3072"/>
+    <material name="shelf" rgba=".9 .9 .9 1"/>
+    <material name="plastic" rgba="1 1 1 0.3" reflectance="0.4"/>
+    <material name="wall" rgba=".2 .2 .2 1"/>
+    <texture type="2d" name="Tuna" file="grocery/Tuna.png"/>
+    <material name="Tuna" texture="Tuna" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/Tuna.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="Mushrooms" file="grocery/Mushrooms.png"/>
+    <material name="Mushrooms" texture="Mushrooms" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/Mushrooms.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="Spaghetti" file="grocery/Spaghetti.png"/>
+    <material name="Spaghetti" texture="Spaghetti" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/Spaghetti.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="MacaroniAndCheese" file="grocery/MacaroniAndCheese.png"/>
+    <material name="MacaroniAndCheese" texture="MacaroniAndCheese" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/MacaroniAndCheese.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="Milk" file="grocery/Milk.png"/>
+    <material name="Milk" texture="Milk" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/Milk.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="Peaches" file="grocery/Peaches.png"/>
+    <material name="Peaches" texture="Peaches" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/Peaches.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="Raisins" file="grocery/Raisins.png"/>
+    <material name="Raisins" texture="Raisins" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/Raisins.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="GreenBeans" file="grocery/GreenBeans.png"/>
+    <material name="GreenBeans" texture="GreenBeans" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/GreenBeans.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="Cookies" file="grocery/Cookies.png"/>
+    <material name="Cookies" texture="Cookies" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/Cookies.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="Cherries" file="grocery/Cherries.png"/>
+    <material name="Cherries" texture="Cherries" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/Cherries.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="Yogurt" file="grocery/Yogurt.png"/>
+    <material name="Yogurt" texture="Yogurt" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/Yogurt.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="CreamCheese" file="grocery/CreamCheese.png"/>
+    <material name="CreamCheese" texture="CreamCheese" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/CreamCheese.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="Mustard" file="grocery/Mustard.png"/>
+    <material name="Mustard" texture="Mustard" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/Mustard.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="Corn" file="grocery/Corn.png"/>
+    <material name="Corn" texture="Corn" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/Corn.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="OrangeJuice" file="grocery/OrangeJuice.png"/>
+    <material name="OrangeJuice" texture="OrangeJuice" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/OrangeJuice.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="GranolaBars" file="grocery/GranolaBars.png"/>
+    <material name="GranolaBars" texture="GranolaBars" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/GranolaBars.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="Mayo" file="grocery/Mayo.png"/>
+    <material name="Mayo" texture="Mayo" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/Mayo.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="ChocolatePudding" file="grocery/ChocolatePudding.png"/>
+    <material name="ChocolatePudding" texture="ChocolatePudding" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/ChocolatePudding.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="Butter" file="grocery/Butter.png"/>
+    <material name="Butter" texture="Butter" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/Butter.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="BBQSauce" file="grocery/BBQSauce.png"/>
+    <material name="BBQSauce" texture="BBQSauce" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/BBQSauce.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="Popcorn" file="grocery/Popcorn.png"/>
+    <material name="Popcorn" texture="Popcorn" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/Popcorn.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="AlphabetSoup" file="grocery/AlphabetSoup.png"/>
+    <material name="AlphabetSoup" texture="AlphabetSoup" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/AlphabetSoup.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="SaladDressing" file="grocery/SaladDressing.png"/>
+    <material name="SaladDressing" texture="SaladDressing" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/SaladDressing.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="Parmesan" file="grocery/Parmesan.png"/>
+    <material name="Parmesan" texture="Parmesan" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/Parmesan.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="TomatoSauce" file="grocery/TomatoSauce.png"/>
+    <material name="TomatoSauce" texture="TomatoSauce" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/TomatoSauce.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="Pineapple" file="grocery/Pineapple.png"/>
+    <material name="Pineapple" texture="Pineapple" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/Pineapple.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="Ketchup" file="grocery/Ketchup.png"/>
+    <material name="Ketchup" texture="Ketchup" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/Ketchup.obj" scale="0.01 0.01 0.01"/>
+    <texture type="2d" name="PeasAndCarrots" file="grocery/PeasAndCarrots.png"/>
+    <material name="PeasAndCarrots" texture="PeasAndCarrots" specular="0.5" shininess="0.5"/>
+    <mesh file="grocery/PeasAndCarrots.obj" scale="0.01 0.01 0.01"/>
+  </asset>
+
+  <worldbody>
+  <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>
+  <geom name="floor" size="0 0 0.05" type="plane" material="floor"/>
+  <body name="render_cam" pos="-1.0 -1.0  2" quat="0.853582574770878 0.353565496535955 -0.146369166444131 -0.353366409291985">
+      <camera name="render_cam" fovy="58"/>
+  </body>

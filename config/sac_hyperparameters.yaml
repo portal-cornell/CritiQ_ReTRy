@@ -1,0 +1,35 @@
+gamma: 0.00012399666390668657
+tau: 0.006313515445564512
+train_freq: 1
+learning_rate: 0.00044547488657915586
+ent_coef: "auto"
+batch_size: 2048
+policy_kwargs:
+  net_arch:
+    pi: [256, 256, 256, 256, 256]
+    qf: [256, 256, 256, 256, 256]
+    activation_fn: "relu"
+
+#{'gamma': 0.9, 'learning_rate': 3.362660442139336e-05, 'batch_size': 512, 'learning_starts': 20000, 'train_freq': 10, 'tau': 0.01, 'net_arch': 'big'}
+#{'gamma': 0.0007509994881541545, 'tau': 0.00105469904787201, 'learning_rate': 0.00023082741219253788, 'batch_exp': 12, 'net_arch': 'big', 'act_func': 'tanh', 'algo': 'tqc'}
+#{'gamma': 0.00022797411951013026, 'tau': 0.0011567341549156753, 'learning_rate': 0.0002689443937884182, 'batch_exp': 11, 'act_func': 'tanh', 'algo': 'tqc'}
+# {'gamma': 0.021984237551028202, 'tau': 0.007606425266616734, 'learning_rate': 0.0005971532480469013, 'batch_exp': 11, 'act_func': 'tanh', 'algo': 'tqc'}
+
+# {'gamma': 0.07525811502604345, 'tau': 0.005845006970536748, 'learning_rate': 0.0009661169998589975, 'batch_exp': 2048, 'net_arch': '256, 256, 256, 256', 'act_func': 'tanh'} goat
+
+# recover
+# {'gamma': 0.017999925259207232, 'tau': 0.002960122985973822, 'learning_rate': 0.00025716453483014853, 'batch_exp': 11, 'net_arch': 'max', 'act_func': 'tanh'} -1.3
+# {'gamma': 0.0157232197668052, 'tau': 0.007280248719197284, 'learning_rate': 0.0004504263420840203, 'batch_exp': 11, 'net_arch': 'big', 'act_func': 'relu'} -1.2
+
+# {'gamma': 0.008097793835772778, 'tau': 0.006658766645207601, 'learning_rate': 0.00013707210891257966, 'batch_exp': 10, 'net_arch': 'big', 'act_func': 'relu'} -2.9
+
+# teacher friction
+# {'gamma': 0.09005968096337065, 'tau': 0.007308972541726733, 'learning_rate': 0.0008498215563104676, 'batch_exp': 12, 'net_arch': 'max', 'act_func': 'relu'} 66
+# {'gamma': 0.02195148040619841, 'tau': 0.001933484822130638, 'learning_rate': 0.0005662037998520138, 'batch_exp': 11, 'net_arch': 'big', 'act_func': 'relu'} -15
+
+# nav expert
+# {'gamma': 0.025009056811681557, 'tau': 0.001269215270118255, 'learning_rate': 0.0008520156236540662, 'batch_exp': 13, 'net_arch': 'big', 'act_func': 'tanh'} 14
+
+# nav recover rl
+# {'gamma': 0.001678622448725098, 'tau': 0.00926410887336359, 'learning_rate': 4.168655967618113e-05, 'batch_exp': 11, 'net_arch': 'max', 'act_func': 'relu'} -17
+# {'gamma': 0.00012399666390668657, 'tau': 0.006313515445564512, 'learning_rate': 0.00044547488657915586, 'batch_exp': 11, 'net_arch': 'big', 'act_func': 'relu'} 9

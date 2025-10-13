@@ -1,0 +1,12 @@
+student: False
+model_training: "rl"
+model_path: "/share/portal/nlc62/CritiQ_ReTRy/example_models/teacher_drawer.zip"
+env_id: "StretchDrawer"
+device: "cuda:0"
+run_name: "drawer_teacher"
+record_video: True
+frame_skip: 20
+max_episode_steps: 100
+num_ep: 10
+reset_bank_path: ""
+seed: 1
