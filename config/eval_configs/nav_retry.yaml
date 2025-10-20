@@ -1,0 +1,12 @@
+student: True
+model_training: "rl"
+model_path: "/share/portal/nlc62/CritiQ_ReTRy/example_models/retry_nav_final.zip"
+env_id: "StretchNav"
+device: "cuda:0"
+run_name: "nav_retry"
+record_video: True
+frame_skip: 40
+max_episode_steps: 500
+num_ep: 4
+reset_bank_path: ""
+seed: 2

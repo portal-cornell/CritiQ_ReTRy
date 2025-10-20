@@ -55,6 +55,9 @@
             <geom name="r4_wall3" type="box" pos="2.25 0.7 1.0" size="0.05 1.1 1.0" />
             <geom name="r4_wall4" type="box" pos="-2.25 0.0 1.0" size="0.05 1.8 1.0" />
         </body>
-    
+        <body name="red_box" pos="0.0 0.0 0.00">
+            <freejoint name="red_box"/>
+            <geom name="red_box" pos="0 0 0" size="0.2 0.2 0.2" rgba="1 0 0 1"  type="box" density="5000" friction="0.01 0.005 0.0001"/>
+        </body>
     </worldbody>
 </mujoco>

@@ -15,7 +15,7 @@ import time
 import mujoco.viewer
 from envs import __file__ as base_path
 from envs import stretch
-from envs.stretch_utils import get_history_obs
+from envs.stretch_utils import get_history_obs, get_obs_space
 
 
 class StretchNav(BaseStretchEnv):
@@ -30,7 +30,7 @@ class StretchNav(BaseStretchEnv):
         seed=None,
         timestep=0.005,
         student=False,
-        student_obs=False,
+        imitation_learning_training=False,
         initial_states=None
     ):
         """
@@ -49,34 +49,10 @@ class StretchNav(BaseStretchEnv):
         """
 
         self.initial_states = initial_states
-        self.student = student or student_obs
-        # self.joints = JNT_NAMES.copy()[1:2]
-        # joint_state_shape = len(self.joints)+1 #  joint_yaw, joint_grip, wrist extension
-        self.observation_space = Dict(
-            {
-                # "base_pos": Box(low=-np.inf, high=np.inf, shape=(2,)),
-                "base_rot" : Box(low=-np.inf, high=np.inf, shape=(1,)),
-                "target_0": Box(low=-np.inf, high=np.inf, shape=(2,)),
-                "target_1": Box(low=-np.inf, high=np.inf, shape=(2,)),
-                "target_2": Box(low=-np.inf, high=np.inf, shape=(2,)),
-                "target_3": Box(low=-np.inf, high=np.inf, shape=(2,)),
-                "target": Box(low=-np.inf, high=np.inf, shape=(4,)),
-            }
-        )
-
-        if self.student:
-            self.observation_space = Dict(
-                {
-                    # "base_pos": Box(low=-np.inf, high=np.inf, shape=(2,)),
-                    "base_rot" : Box(low=-np.inf, high=np.inf, shape=(1,)),
-                    "target_0": Box(low=-np.inf, high=np.inf, shape=(2,)),
-                    "target_1": Box(low=-np.inf, high=np.inf, shape=(2,)),
-                    "target_2": Box(low=-np.inf, high=np.inf, shape=(2,)),
-                    "target_3": Box(low=-np.inf, high=np.inf, shape=(2,)),
-                    "target_history": Box(low=-np.inf, high=np.inf, shape=(4,)),
-                    # "target": Box(low=-np.inf, high=np.inf, shape=(4,)),
-                }
-            )
+        self.student = student
+        self.imitation_learning_training = imitation_learning_training
+        self.observation_space = get_obs_space("nav", self.student, self.imitation_learning_training)
+        
         #init base env
         location = os.path.dirname(os.path.realpath(base_path))
         fname = os.path.join(location, f"scenes/stretch_nav.xml")
@@ -110,7 +86,7 @@ class StretchNav(BaseStretchEnv):
         self.reset_tried_2 = 0
         self.reset_tried_3 = 0
         self.observation_history = []
-
+        self.env_id = "nav"
         if data is not None:
             self.set_state(data)
         elif self.initial_states is not None:
@@ -121,7 +97,7 @@ class StretchNav(BaseStretchEnv):
             rot = Rotation.from_euler('z', 180, degrees=True)
             x, y, z, w = rot.as_quat()
 
-            super().reset_model([0.63, 0.02, 3, 0., -np.pi / 2, -0.65, 0, 0, -4, 0, 0, w, x, y, z])
+            super().reset_model(self.env_id, [0.63, 0.02, 3, 0., -np.pi / 2, -0.65, 0, 0, -4, 0, 0, w, x, y, z])
 
         # if not self.student:
         #     self.robot_pos = np.random.uniform(-5, 5, size=2)
@@ -188,15 +164,7 @@ class StretchNav(BaseStretchEnv):
             history[3] = 1.
             self.reset_tried_3 = 1
         
-        obs = {
-            "base_rot": np.array([self.base_euler[2]], dtype=np.float32),
-            "target_0": np.array(self.all_target_pos[0], dtype=np.float32),
-            "target_1": np.array(self.all_target_pos[1], dtype=np.float32),
-            "target_2": np.array(self.all_target_pos[2], dtype=np.float32),
-            "target_3": np.array(self.all_target_pos[3], dtype=np.float32),
-            "target": one_hot
-        }
-        if self.student:
+        if self.imitation_learning_training:
             obs = {
                 "base_rot": np.array([self.base_euler[2]], dtype=np.float32),
                 "target_0": np.array(self.all_target_pos[0], dtype=np.float32),
@@ -204,8 +172,28 @@ class StretchNav(BaseStretchEnv):
                 "target_2": np.array(self.all_target_pos[2], dtype=np.float32),
                 "target_3": np.array(self.all_target_pos[3], dtype=np.float32),
                 "target_history": history,
-                # "target": one_hot,
+                "target": one_hot,
             }
+        else:
+            if self.student:
+                obs = {
+                    "base_rot": np.array([self.base_euler[2]], dtype=np.float32),
+                    "target_0": np.array(self.all_target_pos[0], dtype=np.float32),
+                    "target_1": np.array(self.all_target_pos[1], dtype=np.float32),
+                    "target_2": np.array(self.all_target_pos[2], dtype=np.float32),
+                    "target_3": np.array(self.all_target_pos[3], dtype=np.float32),
+                    "target_history": history,
+                }
+            else:
+                obs = {
+                    "base_rot": np.array([self.base_euler[2]], dtype=np.float32),
+                    "target_0": np.array(self.all_target_pos[0], dtype=np.float32),
+                    "target_1": np.array(self.all_target_pos[1], dtype=np.float32),
+                    "target_2": np.array(self.all_target_pos[2], dtype=np.float32),
+                    "target_3": np.array(self.all_target_pos[3], dtype=np.float32),
+                    "target": one_hot
+                }
+
         self.observation_history.append(obs)
         return obs
 
@@ -313,16 +301,11 @@ class StretchNav(BaseStretchEnv):
                 # mj_step can be replaced with code that also evaluates
                 # a policy and applies a control signal before stepping the physics.
 
-                # print(self._init_pos)
                 obs = self._get_obs()
                 print(self._get_reward(obs, None))
                 print(self._get_success_ended())
                 mujoco.mj_step(m,d)
 
-                # input()
-                # if time.time() - a > 5:
-                #     # self.reset_scene()
-                #     a = time.time()
                 viewer.sync()
 
                 # Rudimentary time keeping, will drift relative to wall clock.

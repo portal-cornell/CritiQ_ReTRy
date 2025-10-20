@@ -4,7 +4,6 @@ from gymnasium.spaces import Box, Dict, Space
 import numpy as np
 import sys
 from numpy.typing import NDArray
-from envs.drawer.gen_env_drawer import gen_arrangement
 import mujoco
 import open3d as o3d
 from scipy.spatial.transform import Rotation
@@ -12,7 +11,7 @@ import os
 from envs.stretch import *
 import time 
 import mujoco.viewer
-from envs.stretch_utils import seq_obs, get_history_obs
+from envs.stretch_utils import get_history_obs, get_obs_space
 from copy import deepcopy
 from envs import __file__ as base_path
 
@@ -27,6 +26,7 @@ class StretchDrawer(BaseStretchEnv):
         seed=None,
         timestep=0.005,
         student=False,
+        imitation_learning_training=False,
         initial_states=None,
     ):
         """
@@ -45,43 +45,17 @@ class StretchDrawer(BaseStretchEnv):
             delta_handle_pos    | delta xyz (meters) from gripper centre to each drawer with opt one-hot for goal drawer
             handle_displacement | scalar value for state of drawer (meters)
         """
+        self.joints = ["joint_lift", "joint_wrist_yaw", "joint_gripper_finger_left_open"] # wrist ext added later
         joint_state_shape = 4 # joint_lift, joint_yaw, joint_grip, wrist extension
-        self.observation_space = Dict(
-            {
-                "jnt_states": Box(low=-np.inf, high=np.inf, shape=(4,)),
-                "delta_handle_pos_0": Box(low=-np.inf, high=np.inf, shape=(4,)),
-                "handle_displacement_0": Box(low=-np.inf, high=np.inf, shape=(1,)),
-                "delta_handle_pos_1": Box(low=-np.inf, high=np.inf, shape=(4,)),
-                "handle_displacement_1": Box(low=-np.inf, high=np.inf, shape=(1,)),
-                "delta_handle_pos_2": Box(low=-np.inf, high=np.inf, shape=(4,)),
-                "handle_displacement_2": Box(low=-np.inf, high=np.inf, shape=(1,)),
-            }
-        )
+        self.student = student
+        self.imitation_learning_training = imitation_learning_training
+        self.observation_space = get_obs_space("drawer", self.student, self.imitation_learning_training)
 
-        self.student_obs = student
-        self.student_info = {}
         self.initial_states = initial_states
 
-        if self.student_obs:
-            self.observation_space = Dict()
-            self.observation_space["jnt_states"] = Box(low=-np.inf, high=np.inf, shape=(4,))
-            self.observation_space["student_handle_pos_0"] = Box(low=-np.inf, high=np.inf, shape=(3,))
-            self.observation_space["handle_displacement_0"] = Box(low=-np.inf, high=np.inf, shape=(1,))
-            self.observation_space["handle_0_status"] = Box(low=-np.inf, high=np.inf, shape=(1,))
-            self.observation_space["student_handle_pos_1"] = Box(low=-np.inf, high=np.inf, shape=(3,))
-            self.observation_space["handle_displacement_1"] = Box(low=-np.inf, high=np.inf, shape=(1,))
-            self.observation_space["handle_1_status"] = Box(low=-np.inf, high=np.inf, shape=(1,))
-            self.observation_space["student_handle_pos_2"] = Box(low=-np.inf, high=np.inf, shape=(3,))
-            self.observation_space["handle_displacement_2"] = Box(low=-np.inf, high=np.inf, shape=(1,))
-            self.observation_space["handle_2_status"] = Box(low=-np.inf, high=np.inf, shape=(1,))
-            # Uncomment if needed by imitation learning methods
-            # self.observation_space["delta_handle_pos_0"] = Box(low=-np.inf, high=np.inf, shape=(4,))
-            # self.observation_space["delta_handle_pos_1"] = Box(low=-np.inf, high=np.inf, shape=(4,))
-            # self.observation_space["delta_handle_pos_2"] = Box(low=-np.inf, high=np.inf, shape=(4,))
-     
         #init base env
         location = os.path.dirname(os.path.realpath(base_path))
-        fname = os.path.join(location, f"scenes/scene_600_400_700_1902111393.xml")
+        fname = os.path.join(location, f"scenes/stretch_drawer.xml")
         action_mask = np.ones(10)
         action_mask[0] = action_mask[1] = action_mask[6] = action_mask[7] = action_mask[8] = action_mask[9] = 0
         super().__init__(
@@ -98,6 +72,7 @@ class StretchDrawer(BaseStretchEnv):
         )
     
     def reset_model(self, data = None):
+        self.env_id = "drawer"
         self.num_steps = 0
         self.reset_opened_0 = 0
         self.reset_opened_1 = 0
@@ -109,7 +84,7 @@ class StretchDrawer(BaseStretchEnv):
             data = sampled_bank.sample(pop=False)
             self.set_state(data)
         else:
-            super().reset_model(data)
+            super().reset_model(self.env_id, data)
         return self._get_obs()
 
     def get_state(self):
@@ -175,7 +150,7 @@ class StretchDrawer(BaseStretchEnv):
 
     def _get_joint_states(self):
         joint_states = []
-        for i in JNT_NAMES:
+        for i in self.joints:
             joint_states.append(self.data.joint(i).qpos[:2])
         joint_states.append(
             np.sum(
@@ -238,18 +213,18 @@ class StretchDrawer(BaseStretchEnv):
             + self.data.body("rubber_tip_right").xpos
         ) / 2
 
-        if self.student_obs:
+        if self.student:
             self.target_pos, self.handle_pos_0, self.handle_pos_1, self.handle_pos_2 = self._get_drawers(self.chosen_drawer, one_hot=False)
-            t, a, b, c = self._get_drawers(self.chosen_drawer, one_hot=True)
-            a[:3] -= self.gripper_pos
-            b[:3] -= self.gripper_pos
-            c[:3] -= self.gripper_pos
+            t, priv_delta_0, priv_delta_1, priv_delta_2 = self._get_drawers(self.chosen_drawer, one_hot=True)
+            priv_delta_0[:3] -= self.gripper_pos
+            priv_delta_1[:3] -= self.gripper_pos
+            priv_delta_2[:3] -= self.gripper_pos
         else:
             self.target_pos, self.handle_pos_0, self.handle_pos_1, self.handle_pos_2 = self._get_drawers(self.chosen_drawer, one_hot=True)
 
         self.target_displacement, self.displacement_0, self.displacement_1, self.displacement_2 = self._get_drawer_displacement(self.chosen_drawer)
         joint_states = []
-        for i in JNT_NAMES:
+        for i in self.joints:
             joint_states.append(self.data.joint(i).qpos[:2])
         joint_states.append(
             np.sum(
@@ -272,17 +247,7 @@ class StretchDrawer(BaseStretchEnv):
         self.handle_pos_1[:3] -= self.gripper_pos
         self.handle_pos_2[:3] -= self.gripper_pos
 
-        obs = {
-            "jnt_states": np.float32(np.concatenate(joint_states)),
-            "delta_handle_pos_0": np.float32(self.handle_pos_0),
-            "handle_displacement_0": np.float32(self.displacement_0),
-            "delta_handle_pos_1": np.float32(self.handle_pos_1),
-            "handle_displacement_1": np.float32(self.displacement_1),
-            "delta_handle_pos_2": np.float32(self.handle_pos_2),
-            "handle_displacement_2": np.float32(self.displacement_2),
-        }
-
-        if self.student_obs:
+        if self.imitation_learning_training:
             obs = {}
             obs["jnt_states"] = np.float32(np.concatenate(joint_states))
             obs["student_handle_pos_0"] = np.float32(self.handle_pos_0)
@@ -294,9 +259,32 @@ class StretchDrawer(BaseStretchEnv):
             obs["student_handle_pos_2"] = np.float32(self.handle_pos_2)
             obs["handle_displacement_2"] = np.float32(self.displacement_2)
             obs["handle_2_status"] = np.float32(np.array([handle_2_tried]))
-            obs["delta_handle_pos_0"] = np.float32(a)
-            obs["delta_handle_pos_1"] = np.float32(b)
-            obs["delta_handle_pos_2"] = np.float32(c)
+            obs["delta_handle_pos_0"] = np.float32(priv_delta_0)
+            obs["delta_handle_pos_1"] = np.float32(priv_delta_1)
+            obs["delta_handle_pos_2"] = np.float32(priv_delta_2)
+        else:
+            if self.student:
+                obs = {}
+                obs["jnt_states"] = np.float32(np.concatenate(joint_states))
+                obs["student_handle_pos_0"] = np.float32(self.handle_pos_0)
+                obs["handle_displacement_0"] = np.float32(self.displacement_0)
+                obs["handle_0_status"] = np.float32(np.array([handle_0_tried]))
+                obs["student_handle_pos_1"] = np.float32(self.handle_pos_1)
+                obs["handle_displacement_1"] = np.float32(self.displacement_1)
+                obs["handle_1_status"] = np.float32(np.array([handle_1_tried]))
+                obs["student_handle_pos_2"] = np.float32(self.handle_pos_2)
+                obs["handle_displacement_2"] = np.float32(self.displacement_2)
+                obs["handle_2_status"] = np.float32(np.array([handle_2_tried]))
+            else:
+                obs = {
+                    "jnt_states": np.float32(np.concatenate(joint_states)),
+                    "delta_handle_pos_0": np.float32(self.handle_pos_0),
+                    "handle_displacement_0": np.float32(self.displacement_0),
+                    "delta_handle_pos_1": np.float32(self.handle_pos_1),
+                    "handle_displacement_1": np.float32(self.displacement_1),
+                    "delta_handle_pos_2": np.float32(self.handle_pos_2),
+                    "handle_displacement_2": np.float32(self.displacement_2),
+                }
 
         self.observation_history.append(obs)
             
@@ -421,7 +409,7 @@ class StretchDrawer(BaseStretchEnv):
                 mujoco.mj_contactForce(self.model, self.data, n, contact_force)
                 total_force += contact_force[:3]
         magnitude = np.sum(np.abs(total_force))
-        # print(f"Total force: {total_force}, {magnitude} at step {self.num_steps}")
+
         return magnitude
 
     def _get_success_ended(self):
@@ -457,7 +445,7 @@ class StretchDrawer(BaseStretchEnv):
         d = self.data
         self._robot_id = self.model.body("base_link").id
         pcs = []
-        # (d.geom("gripper_left_1"))
+        
         with mujoco.viewer.launch_passive(m, d) as viewer:
             obs, _ = self.reset()
             start = time.time()
@@ -468,13 +456,8 @@ class StretchDrawer(BaseStretchEnv):
                 # mj_step can be replaced with code that also evaluates
                 # a policy and applies a control signal before stepping the physics.
                 
-                # print(self._init_pos)
                 mujoco.mj_step(m,d)
                 
-                # input()
-                # if time.time() - a > 5:
-                #     # self.reset_scene()
-                #     a = time.time()
                 viewer.sync()
 
                 # Rudimentary time keeping, will drift relative to wall clock.

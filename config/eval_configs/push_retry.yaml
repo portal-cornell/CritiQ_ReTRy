@@ -1,0 +1,12 @@
+student: True
+model_training: "rl"
+model_path: "/share/portal/nlc62/CritiQ_ReTRy/example_models/retry_push_final.zip"
+env_id: "singlepush"
+device: "cuda:0"
+run_name: "push_retry"
+record_video: True
+frame_skip: 20
+max_episode_steps: 100
+num_ep: 20
+reset_bank_path: ""
+seed: 1

@@ -195,20 +195,7 @@ if __name__ == "__main__":
     parser.add_argument("--load_saved", type=str, default=None)
     parser.add_argument("--teacher_env_id", type=str, default="singlepush")
     parser.add_argument("--student_env_id", type=str, default="singlepush")
-    # blind pick
-    # /share/portal/nlc62/benchmarks/Gymnasium-Robotics/model_checkpoints/blind_pick_tune/308.4138841496391
-    # "FOFixedGripper2DBlind7cmPick-v0"
-    # "POFixedGripper2DBlind7cmPick-v0"
-    # block
-    # /share/portal/nlc62/benchmarks/Gymnasium-Robotics/teacher_model/block_20.zip
-    # "HandManipulateBlockRotateZDense-v1"
-    # "HandManipulateBlockRotateZ_Noisy"
-    # "HandManipulateBlockRotateZ_Image"
-    # pen
-    # /share/portal/nlc62/benchmarks/Gymnasium-Robotics/model_checkpoints/pen_tuning/-16.582218116625402
-    # "HandManipulatePenRotateDense-v1"
-    # "HandManipulatePenRotate_Noisy"
-    # "HandManipulatePenRotate_Image-v1"
+    
     args = parser.parse_args()
 
     teacher_model = TQC.load(args.teacher)
@@ -229,9 +216,6 @@ if __name__ == "__main__":
         teacher_sim, 
         args.buffer_num_traj,
     )
-    # sys.exit()
-    # with open("./teacher_initial.pickle", "rb") as file:
-    #     bank_D = pickle.load(file)
 
     student_env = args.student_env_id
     # Student training loop

@@ -14,7 +14,7 @@ import time
 import mujoco.viewer
 from envs import __file__ as base_path
 from envs import stretch
-from envs.stretch_utils import get_history_obs
+from envs.stretch_utils import get_history_obs, get_obs_space
 import pickle
 
 class SinglePush(BaseStretchEnv):
@@ -28,6 +28,7 @@ class SinglePush(BaseStretchEnv):
         seed=None,
         timestep=0.005,
         student=False, 
+        imitation_learning_training=False,
         initial_states=None
     ):
         """
@@ -45,35 +46,12 @@ class SinglePush(BaseStretchEnv):
             gripper_table | delta from gripper centre to table centre
         """
         self.student = student
+        self.imitation_learning_training = imitation_learning_training
         self.initial_states = initial_states
         self.joints = ["joint_wrist_yaw"]
-        joint_state_shape = len(self.joints)+1 #  joint_yaw, joint_grip, wrist extension
-        self.observation_space = Dict(
-            {
-                "jnt_states": Box(low=-np.inf, high=np.inf, shape=(joint_state_shape,)),
-                "red_box": Box(low=-np.inf, high=np.inf, shape=(2,)),
-                "target_0": Box(low=-np.inf, high=np.inf, shape=(2,)),
-                "target_1": Box(low=-np.inf, high=np.inf, shape=(2,)),
-                "target_2": Box(low=-np.inf, high=np.inf, shape=(2,)),
-                "red_target": Box(low=-np.inf, high=np.inf, shape=(3,)),
-            }
-        )
-
-        if self.student:
-            self.observation_space = Dict(
-                {
-                    "jnt_states": Box(low=-np.inf, high=np.inf, shape=(joint_state_shape,)),
-                    "red_box": Box(low=-np.inf, high=np.inf, shape=(2,)),
-                    "target_0": Box(low=-np.inf, high=np.inf, shape=(2,)),
-                    "target_1": Box(low=-np.inf, high=np.inf, shape=(2,)),
-                    "target_2": Box(low=-np.inf, high=np.inf, shape=(2,)),
-                    "red_history": Box(low=-np.inf, high=np.inf, shape=(3,)),
-                    # Uncomment if needed by imitation learning method
-                    # "red_target": Box(low=-np.inf, high=np.inf, shape=(3,)), 
-                }
-            )
-            
-
+        joint_state_shape = len(self.joints)+1 #  joint_yaw, wrist extension
+        self.observation_space = get_obs_space("push", self.student, self.imitation_learning_training)
+        
         #init base env
         location = os.path.dirname(os.path.realpath(base_path))
         fname = os.path.join(location, f"scenes/stretch_single.xml")
@@ -104,13 +82,13 @@ class SinglePush(BaseStretchEnv):
         self.reset_tried_0 = 0
         self.reset_tried_1 = 0
         self.reset_tried_2 = 0
-        
+        self.env_id = "push"
         if self.initial_states is not None:
             sampled_bank = self.initial_states.sample(pop=False)
             data = sampled_bank.sample(pop=False)
             self.set_state(data)
         else:
-            super().reset_model([0.64, 0.1, 0., 0., -np.pi / 2, -0.65, 0, 0, 0, 0.19, 0, 0, 0, 0, 1])
+            super().reset_model(self.env_id, [0.64, 0.1, 0., 0., -np.pi / 2, -0.65, 0, 0, 0, 0.19, 0, 0, 0, 0, 1])
 
         for i in range(3):
             self.model.geom(f"target_{i}").rgba[:] = [0, self.red_target==i, self.red_target!=i, 1]
@@ -193,16 +171,7 @@ class SinglePush(BaseStretchEnv):
             history[2] = 1.
             self.reset_tried_2 = 1
 
-        obs = {
-            "jnt_states": self._get_joint_states(),
-            "target_0" : target_0[:2],
-            "target_1" : target_1[:2],
-            "target_2" : target_2[:2],
-            "red_box" : self.red_box[:2],
-            "red_target": one_hot,
-            # "green_target": one_hot if self.red_target != 0 else np.logical_not(one_hot).astype(np.float32)
-        }
-        if self.student:
+        if self.imitation_learning_training:
             obs = {
                 "jnt_states": self._get_joint_states(),
                 "target_0" : target_0[:2],
@@ -210,8 +179,28 @@ class SinglePush(BaseStretchEnv):
                 "target_2" : target_2[:2],
                 "red_box" : self.red_box[:2],
                 "red_history": history,
-                # "red_target": one_hot,
+                "red_target": one_hot,
             }
+        else:
+            if self.student:
+                obs = {
+                    "jnt_states": self._get_joint_states(),
+                    "target_0" : target_0[:2],
+                    "target_1" : target_1[:2],
+                    "target_2" : target_2[:2],
+                    "red_box" : self.red_box[:2],
+                    "red_history": history,
+                }
+            else:
+                obs = {
+                    "jnt_states": self._get_joint_states(),
+                    "target_0" : target_0[:2],
+                    "target_1" : target_1[:2],
+                    "target_2" : target_2[:2],
+                    "red_box" : self.red_box[:2],
+                    "red_target": one_hot,
+                }
+        
         self.observation_history.append(obs)
         return obs
 

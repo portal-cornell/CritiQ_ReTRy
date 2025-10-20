@@ -2,6 +2,142 @@ import numpy as np
 from stable_baselines3.common.policies import BasePolicy
 from torch import nn
 import torch.nn.functional as F
+from gymnasium.spaces import Box, Dict
+
+def get_obs_space(env_id, is_student, imitation_learning_training):
+    if env_id == "drawer":
+        return get_obs_drawer_space(is_student, imitation_learning_training)
+    elif env_id == "nav":
+        return get_obs_nav_space(is_student, imitation_learning_training)
+    elif env_id == "push":
+        return get_obs_push_space(is_student, imitation_learning_training)
+    else:
+        raise ValueError("Env id not in available envs: (drawer, nav, push)")
+        
+def get_obs_drawer_space(is_student, imitation_learning_training):
+    if imitation_learning_training:
+        observation_space = Dict(
+            {
+                "jnt_states": Box(low=-np.inf, high=np.inf, shape=(4,)),
+                "student_handle_pos_0": Box(low=-np.inf, high=np.inf, shape=(3,)),
+                "handle_displacement_0": Box(low=-np.inf, high=np.inf, shape=(1,)),
+                "handle_0_status": Box(low=-np.inf, high=np.inf, shape=(1,)),
+                "student_handle_pos_1": Box(low=-np.inf, high=np.inf, shape=(3,)),
+                "handle_displacement_1": Box(low=-np.inf, high=np.inf, shape=(1,)),
+                "handle_1_status": Box(low=-np.inf, high=np.inf, shape=(1,)),
+                "student_handle_pos_2": Box(low=-np.inf, high=np.inf, shape=(3,)),
+                "handle_displacement_2": Box(low=-np.inf, high=np.inf, shape=(1,)),
+                "handle_2_status": Box(low=-np.inf, high=np.inf, shape=(1,)),
+                "delta_handle_pos_0": Box(low=-np.inf, high=np.inf, shape=(4,)),
+                "delta_handle_pos_1": Box(low=-np.inf, high=np.inf, shape=(4,)),
+                "delta_handle_pos_2": Box(low=-np.inf, high=np.inf, shape=(4,)),
+            }
+        )
+    else:
+        if is_student:
+            observation_space = Dict(
+                {
+                    "jnt_states": Box(low=-np.inf, high=np.inf, shape=(4,)),
+                    "student_handle_pos_0": Box(low=-np.inf, high=np.inf, shape=(3,)),
+                    "handle_displacement_0": Box(low=-np.inf, high=np.inf, shape=(1,)),
+                    "handle_0_status": Box(low=-np.inf, high=np.inf, shape=(1,)),
+                    "student_handle_pos_1": Box(low=-np.inf, high=np.inf, shape=(3,)),
+                    "handle_displacement_1": Box(low=-np.inf, high=np.inf, shape=(1,)),
+                    "handle_1_status": Box(low=-np.inf, high=np.inf, shape=(1,)),
+                    "student_handle_pos_2": Box(low=-np.inf, high=np.inf, shape=(3,)),
+                    "handle_displacement_2": Box(low=-np.inf, high=np.inf, shape=(1,)),
+                    "handle_2_status": Box(low=-np.inf, high=np.inf, shape=(1,)),
+                }
+            )
+        else:
+            observation_space = Dict(
+                {
+                    "jnt_states": Box(low=-np.inf, high=np.inf, shape=(4,)),
+                    "delta_handle_pos_0": Box(low=-np.inf, high=np.inf, shape=(4,)),
+                    "handle_displacement_0": Box(low=-np.inf, high=np.inf, shape=(1,)),
+                    "delta_handle_pos_1": Box(low=-np.inf, high=np.inf, shape=(4,)),
+                    "handle_displacement_1": Box(low=-np.inf, high=np.inf, shape=(1,)),
+                    "delta_handle_pos_2": Box(low=-np.inf, high=np.inf, shape=(4,)),
+                    "handle_displacement_2": Box(low=-np.inf, high=np.inf, shape=(1,)),
+                }
+            )
+    return observation_space
+
+def get_obs_nav_space(is_student, imitation_learning_training):
+    if imitation_learning_training:
+        observation_space = Dict(
+            {
+                "base_rot" : Box(low=-np.inf, high=np.inf, shape=(1,)),
+                "target_0": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                "target_1": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                "target_2": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                "target_3": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                "target_history": Box(low=-np.inf, high=np.inf, shape=(4,)),
+                "target": Box(low=-np.inf, high=np.inf, shape=(4,)),
+            }
+        )
+    else:
+        if is_student:
+            observation_space = Dict(
+                {
+                    "base_rot" : Box(low=-np.inf, high=np.inf, shape=(1,)),
+                    "target_0": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                    "target_1": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                    "target_2": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                    "target_3": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                    "target_history": Box(low=-np.inf, high=np.inf, shape=(4,)),
+                }
+            )
+        else:
+            observation_space = Dict(
+                {
+                    "base_rot" : Box(low=-np.inf, high=np.inf, shape=(1,)),
+                    "target_0": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                    "target_1": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                    "target_2": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                    "target_3": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                    "target": Box(low=-np.inf, high=np.inf, shape=(4,)),
+                }
+            )
+    return observation_space
+
+def get_obs_push_space(is_student, imitation_learning_traning):
+    if imitation_learning_training:
+        observation_space = Dict(
+            {
+                "jnt_states": Box(low=-np.inf, high=np.inf, shape=(joint_state_shape,)),
+                "red_box": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                "target_0": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                "target_1": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                "target_2": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                "red_history": Box(low=-np.inf, high=np.inf, shape=(3,)),
+                "red_target": Box(low=-np.inf, high=np.inf, shape=(3,)), 
+            }
+        )
+    else:
+        if is_student:
+            observation_space = Dict(
+                {
+                    "jnt_states": Box(low=-np.inf, high=np.inf, shape=(joint_state_shape,)),
+                    "red_box": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                    "target_0": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                    "target_1": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                    "target_2": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                    "red_history": Box(low=-np.inf, high=np.inf, shape=(3,)),
+                }
+            )
+        else:
+            observation_space = Dict(
+                {
+                    "jnt_states": Box(low=-np.inf, high=np.inf, shape=(joint_state_shape,)),
+                    "red_box": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                    "target_0": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                    "target_1": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                    "target_2": Box(low=-np.inf, high=np.inf, shape=(2,)),
+                    "red_target": Box(low=-np.inf, high=np.inf, shape=(3,)),
+                }
+            )
+    return observation_space
 
 def linear_decay_sample(size, decay_factor):
     """

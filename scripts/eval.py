@@ -56,7 +56,7 @@ def plot_info_on_frame(pil_image, info, font_size=30):
         i += 1
     return np.array(pil_image)
 
-def val_env(max_ep_length, frame_skip, model, run_name, sim, env_id, device, num_ep=10, reset_bank=None, record_video=True):
+def val_env(max_ep_length, frame_skip, model, run_name, sim, env_id, student, device, num_ep=10, reset_bank=None, record_video=True):
     if os.path.exists(f"videos/{run_name}"):
         os.system(f"rm -rf videos/{run_name}")
     os.mkdir(f"videos/{run_name}")
@@ -93,11 +93,17 @@ def val_env(max_ep_length, frame_skip, model, run_name, sim, env_id, device, num
             # a = model.predict(obs, deterministic=True)[0]
             
             # ob = {k: torch.tensor(v[np.newaxis, ...].copy(), dtype=torch.float32, device=device) for k, v in obs.items()}
+        
             teacher_ob, student_ob = get_obs_split(obs, env_id) # 0: drawer, 1: push, 2: nav
+            sim_obs = None
+            if student:
+                sim_obs = student_ob
+            else:
+                sim_obs = teacher_ob
             # print(student_ob.keys())
             # with torch.no_grad():
             #     a = model(student_ob).cpu().numpy()[0]
-            a = model.predict(teacher_ob, deterministic=True)[0]
+            a = model.predict(sim_obs, deterministic=True)[0]
             # a = np.array([1, 0], dtype=np.float32)
             save_input = deepcopy(obs)
             save_input["action"] = a
@@ -149,16 +155,8 @@ def val_env(max_ep_length, frame_skip, model, run_name, sim, env_id, device, num
         # fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # You can use other codecs like 'XVID' or 'MJPG'
         # out = cv2.VideoWriter('sim_depth_images.mp4', fourcc, 5.0, (depth_images[0].shape[1], depth_images[0].shape[0]), isColor=False)
 
-        # # Save rotated grayscale images as frames
-        # for img in depth_images:
-        #     # img_copy = np.uint8(img)
-        #     out.write(img)
-
         # Release the VideoWriter and close all windows
         # out.release()
-
-        # with open(f"./sim_inp_{i}.pickle", 'wb') as file:
-        #     pickle.dump(save_dict, file)
 
     # sys.stdout = orig_stdout
     # f.close()
@@ -259,6 +257,7 @@ if __name__ == "__main__":
         config_data["run_name"], 
         sim, 
         config_data["env_id"],
+        config_data["student"],
         device, 
         config_data["num_ep"], 
         reset_bank=reset_bank, 

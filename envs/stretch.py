@@ -6,13 +6,7 @@ import numpy as np
 from numpy.typing import NDArray
 import mujoco
 
-EPSILON = [0.024, 0.024, 0.024]
-ITEM_COL_MAX = 1
-MID_VEL = 6
-VEL_WEIGHT = 50
-D2G_WEIGHT = 1
 JNT_NAMES = ["joint_lift", "joint_wrist_yaw", "joint_gripper_finger_left_open"]
-# STRETCH_INIT_POS = np.array([0, 0, 0, 0.0, 0.0, 0.0, 1.0], dtype=np.float32)
 
 
 class BaseStretchEnv(MujocoEnv):
@@ -237,7 +231,7 @@ class BaseStretchEnv(MujocoEnv):
         self.data = data
         return self.model, self.data
 
-    def reset_model(self, stretch_pos : NDArray = None) -> typing.Any:
+    def reset_model(self, env_id: str = None, stretch_pos : NDArray = None) -> typing.Any:
         """
         Resets robot state.
         Args:
@@ -249,16 +243,28 @@ class BaseStretchEnv(MujocoEnv):
         """
 
         if stretch_pos is not None:
-            self._lift_pos, self._arm_ext, self._wrist_yaw, self._gripper_jnt, self._head_pan, self._head_tilt, self._wrist_pitch, self._wrist_roll, *self.base_pos = stretch_pos  
+            self._lift_pos, self._arm_ext, self._wrist_yaw, self._gripper_jnt, self._head_pan, self._head_tilt, self._wrist_pitch, self._wrist_roll, *self.base_pos = stretch_pos
+            if env_id == "nav":
+                box_pos = np.zeros(7)
+                box_pos[6] = 1
+                if self.target == 0:
+                    box_pos[:2] = [-3.75, 3.75]
+                elif self.target == 1:
+                    box_pos[:2] = [3.25, -3.25]
+                elif self.target == 2:
+                    box_pos[:2] = [2.75, 2.75]
+                else:
+                    box_pos[:2] = [-2.75, -3.25]
+                self.data.joint("red_box").qpos = box_pos
         else:    
         # self.data.mocap_pos[0:3] = self.target_pos
             self._lift_pos = 0.58 + np.random.uniform(0.05,0.15) # TODO: Make this range larger and decrease lower bound
-            self._arm_ext = np.random.uniform(0.01, 0.15)
+            self._arm_ext = np.random.uniform(0.01, 0.03)
 
             self._head_pan = -np.pi / 2 + np.random.uniform(-0.05, 0.05)
             self._head_tilt = -0.65 + np.random.uniform(-0.1, 0.1)
-            self._gripper_jnt = np.random.uniform(-0.003, 0.003)
-            self._wrist_yaw = np.random.uniform(-0.1,0.1)
+            self._gripper_jnt = np.random.uniform(0.0075, 0.015)
+            self._wrist_yaw = np.random.uniform(-0.03,0.03)
 
             stretch_x_noise = np.random.uniform(-0.02, 0.02)
             stretch_y_noise = 0.035 + np.random.uniform(0, 0.015) 
@@ -266,13 +272,25 @@ class BaseStretchEnv(MujocoEnv):
             self.base_pos[6] = 1
             self.base_pos[0] = stretch_x_noise
             self.base_pos[1] = stretch_y_noise
-            self._wrist_pitch = np.random.uniform(-0.1, 0.1)
-            self._wrist_roll = np.random.uniform(-0.1, 0.1)
+            self._wrist_pitch = np.random.uniform(-0.05, 0.05)
+            self._wrist_roll = np.random.uniform(-0.05, 0.05)
 
         self.data.joint("base_link").qpos = self.base_pos
         self.data.joint("joint_lift").qpos[0] = self._lift_pos
         self.data.joint("joint_head_pan").qpos[0] = self._head_pan
         self.data.joint("joint_head_tilt").qpos[0] = self._head_tilt
+
+        if env_id == "drawer":
+            box_pos = np.zeros(7)
+            box_pos[1] = 0.81
+            box_pos[6] = 1
+            if self.chosen_drawer == 0:
+                box_pos[2] = 0.71
+            elif self.chosen_drawer == 1:
+                box_pos[2] = 0.75
+            else:
+                box_pos[2] = 0.815
+            self.data.joint("red_box").qpos = box_pos
         # self.data.joint("joint_wrist_yaw").qpos[0] = self._wrist_yaw
         # self.data.joint("joint_gripper_slide").qpos[0] = self._gripper_jnt
         # self.data.joint("joint_wrist_pitch").qpos[0] = self._wrist_pitch
